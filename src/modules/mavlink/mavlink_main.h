@@ -53,8 +53,8 @@
 #include <arpa/inet.h>
 #include <drivers/device/device.h>
 #endif
-#include <systemlib/param/param.h>
-#include <systemlib/perf_counter.h>
+#include <parameters/param.h>
+#include <perf/perf_counter.h>
 #include <pthread.h>
 #include <systemlib/mavlink_log.h>
 #include <drivers/device/ringbuffer.h>
@@ -109,6 +109,11 @@ public:
 	 */
 	void			display_status();
 
+	/**
+	 * Display the status of all enabled streams.
+	 */
+	void			display_status_streams();
+
 	static int		stream_command(int argc, char *argv[]);
 
 	static int		instance_count();
@@ -136,7 +141,7 @@ public:
 
 	static int		destroy_all_instances();
 
-	static int		get_status_all_instances();
+	static int		get_status_all_instances(bool show_streams_status);
 
 	static bool		instance_exists(const char *device_name, Mavlink *self);
 
@@ -316,14 +321,12 @@ public:
 
 	int			get_instance_id();
 
-#ifndef __PX4_QURT
 	/**
 	 * Enable / disable hardware flow control.
 	 *
 	 * @param enabled	True if hardware flow control should be enabled
 	 */
 	int			enable_flow_control(enum FLOW_CONTROL_MODE enabled);
-#endif
 
 	mavlink_channel_t	get_channel();
 
@@ -386,7 +389,7 @@ public:
 	bool			get_has_received_messages() { return _received_messages; }
 	void			set_wait_to_transmit(bool wait) { _wait_to_transmit = wait; }
 	bool			get_wait_to_transmit() { return _wait_to_transmit; }
-	bool			should_transmit() { return (_boot_complete && (!_wait_to_transmit || (_wait_to_transmit && _received_messages))); }
+	bool			should_transmit() { return (_transmitting_enabled && _boot_complete && (!_wait_to_transmit || (_wait_to_transmit && _received_messages))); }
 
 	bool			message_buffer_write(const void *ptr, int size);
 
@@ -394,7 +397,7 @@ public:
 	void			unlockMessageBufferMutex(void) { pthread_mutex_unlock(&_message_buffer_mutex); }
 
 	/**
-	 * Count a transmision error
+	 * Count a transmission error
 	 */
 	void			count_txerr();
 
@@ -434,7 +437,7 @@ public:
 
 	const in_addr compute_broadcast_addr(const in_addr &host_addr, const in_addr &netmask_addr);
 
-	struct sockaddr_in 	*get_client_source_address() { return &_src_addr; }
+	struct sockaddr_in 	&get_client_source_address() { return _src_addr; }
 
 	void			set_client_source_initialized() { _src_addr_initialized = true; }
 
@@ -480,11 +483,28 @@ public:
 
 	bool ftp_enabled() const { return _ftp_on; }
 
+	struct ping_statistics_s {
+		uint64_t last_ping_time;
+		uint32_t last_ping_seq;
+		uint32_t dropped_packets;
+		float last_rtt;
+		float mean_rtt;
+		float max_rtt;
+		float min_rtt;
+	};
+
+	/**
+	 * Get the ping statistics of this MAVLink link
+	 */
+	struct ping_statistics_s &get_ping_statistics() { return _ping_stats; }
+
 protected:
 	Mavlink			*next;
 
 private:
 	int			_instance_id;
+	bool			_transmitting_enabled;
+	bool			_transmitting_enabled_commanded;
 
 	orb_advert_t		_mavlink_log_pub;
 	bool			_task_running;
@@ -520,15 +540,14 @@ private:
 	int32_t			_radio_id;
 
 	ringbuffer::RingBuffer		_logbuffer;
-	unsigned int		_total_counter;
 
 	pthread_t		_receive_thread;
 
 	bool			_forwarding_on;
 	bool			_ftp_on;
-#ifndef __PX4_QURT
+
 	int			_uart_fd;
-#endif
+
 	int			_baudrate;
 	int			_datarate;		///< data rate for normal streams (attitude, position, etc.)
 	int			_datarate_events;	///< data rate for params, waypoints, text messages
@@ -545,7 +564,7 @@ private:
 	bool			mavlink_link_termination_allowed;
 
 	char 			*_subscribe_to_stream;
-	float			_subscribe_to_stream_rate;
+	float			_subscribe_to_stream_rate;  ///< rate of stream to subscribe to (0=disable, -1=unlimited, -2=default)
 	bool 			_udp_initialised;
 
 	enum FLOW_CONTROL_MODE	_flow_control_mode;
@@ -581,6 +600,8 @@ private:
 
 	struct telemetry_status_s	_rstatus;			///< receive status
 
+	struct ping_statistics_s	_ping_stats;		///< ping statistics
+
 	struct mavlink_message_buffer {
 		int write_ptr;
 		int read_ptr;
@@ -613,9 +634,7 @@ private:
 
 	void			mavlink_update_system();
 
-#ifndef __PX4_QURT
 	int			mavlink_open_uart(int baudrate, const char *uart_name, bool force_flow_control);
-#endif
 
 	static int		interval_from_rate(float rate);
 
@@ -623,7 +642,21 @@ private:
 	static constexpr unsigned RADIO_BUFFER_LOW_PERCENTAGE = 35;
 	static constexpr unsigned RADIO_BUFFER_HALF_PERCENTAGE = 50;
 
+	/**
+	 * Configure a single stream.
+	 * @param stream_name
+	 * @param rate streaming rate in Hz, -1 = unlimited rate
+	 * @return 0 on success, <0 on error
+	 */
 	int configure_stream(const char *stream_name, const float rate = -1.0f);
+
+	/**
+	 * Configure default streams according to _mode for either all streams or only a single
+	 * stream.
+	 * @param configure_single_stream: if nullptr, configure all streams, else only a single stream
+	 * @return 0 on success, <0 on error
+	 */
+	int configure_streams_to_default(const char *configure_single_stream = nullptr);
 
 	/**
 	 * Adjust the stream rates based on the current rate
