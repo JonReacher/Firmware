@@ -21,6 +21,42 @@ sh /etc/init.d/rc.vtol_defaults
 
 if [ $AUTOCNF == yes ]
 then
+	param set BAT_A_PER_V 34.0
+	param set BAT_CAPACITY 10000.0
+	param set BAT_CNT_V_CURR 0.0008056640508584678
+	param set BAT_CNT_V_VOLT 0.0008056640508584678
+	param set BAT_N_CELLS 5
+	param set BAT_R_INTERNAL 0.006000000052154064
+	param set BAT_V_CHARGED 4.0
+	param set BAT_V_DIV 13.574000358581543
+	param set BAT_V_EMPTY 3.200000047683716
+	
+	param set FW_AIRSPD_MAX 26.8
+	param set FW_AIRSPD_MIN 15.6
+	param set FW_AIRSPD_TRIM 20.1
+	param set FW_L1_PERIOD 20
+	param set FW_LND_AIRSPD_SC 1
+	param set FW_LND_ANG 8.0
+	param set FW_LND_FLALT 8.0
+	param set FW_MAN_P_MAX 30.0
+	param set FW_PR_FF 1.0
+	param set FW_PR_I 0.180
+	param set FW_PR_P 0.150
+	param set FW_P_LIM_MAX 20.0
+	param set FW_P_LIM_MIN -14.0
+	param set FW_P_RMAX_NEG 45.0
+	param set FW_P_RMAX_POS 45.0
+	param set FW_P_TC 0.5
+	param set FW_RR_FF 1.2
+	param set FW_RR_I 0.08
+	param set FW_RR_P 0.25
+	param set FW_R_LIM 38.0
+	param set FW_R_RMAX 50.0
+	param set FW_THR_CRUISE 0.68
+	param set FW_THR_SLEW_MAX 1.0
+	param set FW_T_CLMB_MAX 4
+	param set FW_T_SINK_MAX 4
+	
 	param set VT_TYPE 2
 	param set VT_MOT_COUNT 4
 	param set VT_F_TRANS_THR 1
@@ -34,31 +70,6 @@ then
 	param set VT_FWD_THRUST_SC 2
 	param set VT_F_TRANS_DUR 1
 	param set VT_IDLE_PWM_MC 1025
-
-	param set FW_ARSP_MODE 2
-	param set FW_L1_PERIOD 25
-	param set FW_PR_FF 0.7
-	param set FW_PR_I 0.18
-	param set FW_PR_P 0.15
-	param set FW_P_TC 0.5
-	param set FW_PSP_OFF 5
-	param set FW_R_LIM 35
-	param set FW_RR_FF 0.9
-	param set FW_RR_I 0.08
-	param set FW_RR_P 0.18
-	param set FW_T_HRATE_FF 0.5
-	param set FW_T_CLMB_MAX 3
-	param set FW_T_SINK_MAX 3
-	param set FW_T_SINK_MIN 1
-	param set FW_T_VERT_ACC 6
-	param set FW_THR_CRUISE 0.68
-	param set FW_THR_SLEW_MAX 1
-	param set FW_MAN_P_MAX 30
-	param set FW_P_LIM_MAX 20
-	param set FW_P_LIM_MIN -25
-	param set FW_P_RMAX_NEG 45
-	param set FW_P_RMAX_POS 45
-	param set FW_R_RMAX 50
 
 	param set LNDMC_ALT_MAX 9999
 	param set LNDMC_XY_VEL_MAX 1
