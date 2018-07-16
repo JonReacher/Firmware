@@ -71,6 +71,8 @@ then
 	param set VT_FWD_THRUST_SC 2
 	param set VT_F_TRANS_DUR 3
 	param set VT_IDLE_PWM_MC 1025
+	param set T_FW_MIN_ALT 20.0
+	param set VT_FW_PERM_STAB 1
 
 	param set LNDMC_ALT_MAX 9999
 	param set LNDMC_XY_VEL_MAX 1
@@ -109,6 +111,8 @@ then
 	param set MPC_Z_VEL_MAX_DN 1.5
 	param set MPC_HOLD_MAX_XY 0.5
 	param set MPC_HOLD_MAX_Z 0.5
+	param set MPC_MANTHR_MAX .85
+	param set MPC_THR_MAX .85
 
 	param set CBRK_IO_SAFETY 22027
 
