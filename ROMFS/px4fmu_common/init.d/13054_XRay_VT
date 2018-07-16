@@ -113,6 +113,13 @@ then
 	param set MPC_HOLD_MAX_Z 0.5
 	param set MPC_MANTHR_MAX .85
 	param set MPC_THR_MAX .85
+	
+	param set MIS_TAKEOFF_ALT 40.0
+	
+	param set PWM_MAIN_REV5 1
+	param set PWM_MAIN_REV6 1
+	
+	param set RTL_TYPE 1
 
 	param set CBRK_IO_SAFETY 22027
 
