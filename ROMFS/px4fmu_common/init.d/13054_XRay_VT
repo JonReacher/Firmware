@@ -23,13 +23,13 @@ if [ $AUTOCNF == yes ]
 then
 	param set BAT_A_PER_V 34.0
 	param set BAT_CAPACITY 10000.0
-	param set BAT_CNT_V_CURR 0.0008056640508584678
-	param set BAT_CNT_V_VOLT 0.0008056640508584678
+	param set BAT_CNT_V_CURR 0.0008
+	param set BAT_CNT_V_VOLT 0.0008
 	param set BAT_N_CELLS 5
-	param set BAT_R_INTERNAL 0.006000000052154064
+	param set BAT_R_INTERNAL 0.006
 	param set BAT_V_CHARGED 4.0
-	param set BAT_V_DIV 13.574000358581543
-	param set BAT_V_EMPTY 3.200000047683716
+	param set BAT_V_DIV 13.574
+	param set BAT_V_EMPTY 3.2
 	
 	param set FW_AIRSPD_MAX 26.8
 	param set FW_AIRSPD_MIN 15.6
